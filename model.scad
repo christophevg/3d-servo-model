@@ -28,6 +28,8 @@ $wc = ($e - $b)/4; // distance from wing border (for now centered in wing)
 $sd = 5.0;         // diameter
 $sc = 15.0;        // distance from side
 
+function servo_top() = $a;
+
 // servo - the 3d model of the servo
 // centered around vertical axis through middle of spline and leveled around the mounting wings
 // be default top-mounted, bottom-mounted via "bottom" parameter/flag
