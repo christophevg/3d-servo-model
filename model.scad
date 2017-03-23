@@ -33,8 +33,8 @@ function servo_top() = $a;
 // servo - the 3d model of the servo
 // centered around vertical axis through middle of spline and leveled around the mounting wings
 // be default top-mounted, bottom-mounted via "bottom" parameter/flag
-module servo(bottom=false) {
-  translate([-$d/2, -$sc, -$f + (bottom ? -$wt : 0) ]) {
+module servo(mounted=true,bottom=false) {
+  translate([-$d/2, -$sc, (mounted ? -$f + (bottom ? -$wt : 0) : 0) ]) {
     // main body
     cube( [$d, $b, $c] );
     // wings
