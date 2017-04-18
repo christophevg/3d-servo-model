@@ -11,44 +11,49 @@ $fn = 50;
 // see image drawing dimensions for information
 // about measurements a through f to configure the modules
 
-// Tower Pro SG90 Digital
-$a = 34.5;
-$b = 22.8;
-$c = 26.7;
-$d = 12.6;
-$e = 32.5;
-$f = 16.0;
+// Kuman MG 90S
+$a  = 32.70;
+$b  = 23.90;
+$cb = 22.50;
+$ct =  5.96;
+$d  = 12.70;
+$e  = 32.60;
+$f  = 18.30;
 
 // wings - to check
-$wt = 2.0;         // thinkness
-$wd = 2.0;         // diameter of screw holes
-$wc = ($e - $b)/4; // distance from wing border (for now centered in wing)
+$wt =  2.80;        // thinkness
+$wd =  2.10;        // diameter of screw holes
+$wc =  2.00;        // distance from wing border
 
-// spline - to check
-$sd = 5.0;         // diameter
-$sc = 15.0;        // distance from side
+// spline
+$sd =  4.80;       // diameter
 
 function servo_top() = $a;
 
 // servo - the 3d model of the servo
-// centered around vertical axis through middle of spline and leveled around the mounting wings
-// be default top-mounted, bottom-mounted via "bottom" parameter/flag
-module servo(mounted=true,bottom=false) {
-  translate([-$d/2, -$sc, (mounted ? -$f + (bottom ? -$wt : 0) : 0) ]) {
+// centered around vertical axis through middle of spline
+// and leveled around the mounting wings
+// default: top-mounted, bottom-mounted via "bottom" parameter/flag
+module servo(bottom=false) {
+  translate([-$d/2, -($b-$d/2), -$f + (bottom ? -$wt : 0) ]) {
     // main body
-    cube( [$d, $b, $c] );
+    cube( [$d, $b, $cb] );
     // wings
     translate([0, -($e - $b)/2, $f]) {
       difference() {
         cube( [$d, $e, $wt] );
         // screw holes
-        translate([$d/2, $wc, 0])    { cylinder( $a - $c, d=$wd ); }
-        translate([$d/2, $e-$wc, 0]) { cylinder( $a - $c, d=$wd ); } 
+        translate([$d/2, $wc, 0])    { cylinder( $wt, d=$wd ); }
+        translate([$d/2, $e-$wc, 0]) { cylinder( $wt, d=$wd ); } 
       }
     }
+    // "turret"
+    translate([$d/2, $b-$d/2, $cb ]) {
+      cylinder($ct, d=$d);
+    }
     // spline
-    translate([$d/2, $sc, $c ]) {
-      cylinder($a - $c, d=$sd);
+    translate([$d/2, $b-$d/2, $cb + $ct ]) {
+      cylinder($a - $cb - $ct, d=$sd);
     }
   }
 }
@@ -56,7 +61,7 @@ module servo(mounted=true,bottom=false) {
 // servo_mount - the cutout that can hold the servo
 // centered around vertical axis through middle of spline
 module servo_mount(t=$a) {
-  translate([-$d/2, -$sc, 0]) {
+  translate([-$d/2, -($b-$d/2), 0]) {
     // main body
     cube( [$d, $b, t] );
     // screw holes
@@ -70,12 +75,15 @@ module servo_mount(t=$a) {
 module demo() {
   difference() {
     cube([ 70, 50, 5 ] );
-    translate([25, 25, 0]) { servo_mount(t=10); }
-    translate([50, 25, 0]) { servo_mount(t=10); }
+    translate([25, 25, 0]) { servo_mount(t=5); }
+    translate([50, 25, 0]) { servo_mount(t=5); }
   }
   translate([25, 25, 5]) { color("red") { servo(); } }
+  // the servo and mount are centered around the spline
+  translate([25, 25, -40]) { color("blue") { cylinder(80, d=1); } }
 }
 
 $vpt = [ 34.08, 24.46, 2.75 ];
 $vpr = [ 67.60, 0.00, 40.40 ];
+$vpd = 146.615;
 demo();
