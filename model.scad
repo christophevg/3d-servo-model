@@ -11,48 +11,50 @@ $fn = 50;
 // see image drawing dimensions for information
 // about measurements a through f to configure the modules
 
-// Kuman MG 90S
-$a  = 32.70;
-$b  = 23.90;
-$cb = 22.50;
-$ct =  5.96;
-$d  = 12.70;
-$e  = 32.60;
-$f  = 18.30;
-
+// Kuman MG 90S (=Tower Pro SG90)
+$a  = 32.70;  // height bottom to top of spline
+$b  = 23.90;  // length short side to side
+$cb = 22.50;  // height of body
+$ct =  5.96;  // height of turret
+$d  = 12.70;  // width long side to side
+$e  = 32.60;  // length, including wings
+$f  = 18.30;  // height bottom to underside of wings
 // wings - to check
-$wt =  2.80;        // thinkness
-$wd =  2.10;        // diameter of screw holes
+$wt =  2.80;        // thinkness of wings
+$wd =  2.00;        // diameter of screw holes
 $wc =  2.00;        // distance from wing border
-
 // spline
 $sd =  4.80;       // diameter
 
 function servo_top() = $a;
+function servo_wing_to_top() = $a - $f;
 
 // servo - the 3d model of the servo
 // centered around vertical axis through middle of spline
 // and leveled around the mounting wings
 // default: top-mounted, bottom-mounted via "bottom" parameter/flag
-module servo(bottom=false) {
-  translate([-$d/2, -($b-$d/2), -$f + (bottom ? -$wt : 0) ]) {
+module servo(bottom=false, clearance=0) {
+  x = $d + 2*clearance;
+  y = $b + 2*clearance;
+  
+  translate([-x/2, -(y-x/2), -$f + (bottom ? -$wt : 0) ]) {
     // main body
-    cube( [$d, $b, $cb] );
+    cube( [x, y, $cb] );
     // wings
-    translate([0, -($e - $b)/2, $f]) {
+    translate([0, -($e - y)/2, $f]) {
       difference() {
-        cube( [$d, $e, $wt] );
+        cube( [x, $e, $wt] );
         // screw holes
-        translate([$d/2, $wc, 0])    { cylinder( $wt, d=$wd ); }
-        translate([$d/2, $e-$wc, 0]) { cylinder( $wt, d=$wd ); } 
+        translate([x/2, $wc, 0])    { cylinder( $wt, d=$wd ); }
+        translate([x/2, $e-$wc, 0]) { cylinder( $wt, d=$wd ); } 
       }
     }
     // "turret"
-    translate([$d/2, $b-$d/2, $cb ]) {
+    translate([x/2, y-x/2, $cb ]) {
       cylinder($ct, d=$d);
     }
     // spline
-    translate([$d/2, $b-$d/2, $cb + $ct ]) {
+    translate([x/2, y-x/2, $cb + $ct ]) {
       cylinder($a - $cb - $ct, d=$sd);
     }
   }
