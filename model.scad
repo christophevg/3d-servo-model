@@ -33,7 +33,7 @@ function servo_wing_to_top() = $a - $f;
 // centered around vertical axis through middle of spline
 // and leveled around the mounting wings
 // default: top-mounted, bottom-mounted via "bottom" parameter/flag
-module servo(bottom=false, clearance=0) {
+module servo(bottom=false, clearance=0, with_screw_holes=true) {
   x = $d + 2*clearance;
   y = $b + 2*clearance;
   
@@ -45,8 +45,10 @@ module servo(bottom=false, clearance=0) {
       difference() {
         cube( [x, $e, $wt] );
         // screw holes
-        translate([x/2, $wc, 0])    { cylinder( $wt, d=$wd ); }
-        translate([x/2, $e-$wc, 0]) { cylinder( $wt, d=$wd ); } 
+        if(with_screw_holes) {
+          translate([x/2, $wc, 0])    { cylinder( $wt, d=$wd ); }
+          translate([x/2, $e-$wc, 0]) { cylinder( $wt, d=$wd ); } 
+        }
       }
     }
     // "turret"
