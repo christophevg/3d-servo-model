@@ -62,6 +62,31 @@ module servo(bottom=false, clearance=0, with_screw_holes=true) {
   }
 }
 
+module servo_bottom_mount_inset(clearance=0) {
+  x = $d + 2*clearance;
+  y = $b + 2*clearance;
+  
+  translate([-x/2, -(y-x/2), -($cb+$ct) ]) {
+    // main body
+    cube( [x, y, $cb+$ct] );
+    // wings
+    translate([0, -($e - y)/2, 0]) {
+      difference() {
+        cube( [x, $e, $f+$wt] );
+      }
+    }
+  }
+}
+
+spline_height = $a - $cb - $ct;
+turret_top = $a - spline_height;
+top_wings_to_top_turret = turret_top - ($f + $wt);
+
+// translate([0,0,-top_wings_to_top_turret]) {
+//   color("red") { servo(bottom=true, clearance=0.2); }
+// }
+// servo_bottom_mount_inset(clearance=0.2);
+
 // servo_mount - the cutout that can hold the servo
 // centered around vertical axis through middle of spline
 module servo_mount(t=$a) {
@@ -85,9 +110,17 @@ module demo() {
   translate([25, 25, 5]) { color("red") { servo(); } }
   // the servo and mount are centered around the spline
   translate([25, 25, -40]) { color("blue") { cylinder(80, d=1); } }
+  
+  // mount_inset demo
+  translate([-25, 25, 0]) {
+    translate([0,0,-top_wings_to_top_turret]) {
+      color("red") { servo(bottom=true, clearance=0.2); }
+    }
+    servo_bottom_mount_inset(clearance=0.2);
+  }
 }
 
-$vpt = [ 34.08, 24.46, 2.75 ];
-$vpr = [ 67.60, 0.00, 40.40 ];
-$vpd = 146.615;
+$vpt = [ 16.87, 20.88, 16.90 ];
+$vpr = [ 71.10, 0.00, 27.10 ];
+$vpd = 310;
 demo();
