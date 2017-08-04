@@ -28,6 +28,7 @@ $sd =  4.80;       // diameter
 
 function servo_top() = $a;
 function servo_wing_to_top() = $a - $f;
+function servo_wing_top() = $f + $wt;
 
 // servo - the 3d model of the servo
 // centered around vertical axis through middle of spline
